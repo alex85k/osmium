@@ -1,3 +1,17 @@
 core
 doc
 check-includes-report
+*.vcxproj
+CMakeFiles
+DartConfiguration.tcl
+CTestTestfile.cmake
+*.filters
+*.exe
+cmake_install.cmake
+/OSMIUM.sln
+install_manifest.txt
+/test/t/*/Makefile
+
+CMakeCache.txt
+
+/test/Makefile
