@@ -15,3 +15,6 @@ install_manifest.txt
 CMakeCache.txt
 
 /test/Makefile
+
+*.tlog
+*.log

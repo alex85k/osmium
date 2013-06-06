@@ -89,7 +89,12 @@ More complete outlines of real .osm.pbf files can be created using the osmpbf-ou
 #include <algorithm>
 #include <cmath>
 #include <osmpbf/osmpbf.h>
+#ifndef WIN32
 #include <netinet/in.h>
+#else
+#include <winsock2.h>
+#endif
+
 #include <zlib.h>
 
 #include <osmium/utils/stringtable.hpp>

@@ -22,8 +22,13 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 
 */
 
-#include <google/sparsetable>
+#include <sparsehash/sparse_hash_map>
 
+using google::sparse_hash_map;      // namespace where class lives by default
+
+#include <map>
+
+#include <stdio.h>
 #include <osmium/storage/byid.hpp>
 
 namespace Osmium {
@@ -42,7 +47,7 @@ namespace Osmium {
             * country extracts).
             */
             template <typename TValue>
-            class SparseTable : public Osmium::Storage::ById::Base<TValue> {
+            class SparseMap : public Osmium::Storage::ById::Base<TValue> {
 
             public:
 
@@ -53,24 +58,22 @@ namespace Osmium {
                 *                  The storage will grow by at least this size
                 *                  every time it runs out of space.
                 */
-                SparseTable(const uint64_t grow_size=10000) :
+                SparseMap(const uint64_t grow_size=10000) :
                     Base<TValue>(),
                     m_grow_size(grow_size),
-                    m_items(grow_size) {
-                    m_items.resize(4000000000ULL);
+                    m_items() {
                 }
 
                 void set(const uint64_t id, const TValue value) {
-//       		    std::cout<<"+"<<id<<",";
-                    if (id >= m_items.size()) {
-//			std::cout<<id + m_grow_size<<std::endl;
-                        m_items.resize(id + m_grow_size);
-                    }
                     m_items[id] = value;
                 }
 
                 const TValue operator[](const uint64_t id) const {
-                    return m_items[id];
+	            typename sparse_hash_map<uint64_t, TValue>::const_iterator iter = m_items.find(id);
+	            if (iter != m_items.end() )
+                         return iter->second; 
+                    else
+			 return NULL; 
                 }
 
                 uint64_t size() const {
@@ -79,8 +82,7 @@ namespace Osmium {
 
                 uint64_t used_memory() const {
                     // unused items use 1 bit, used items sizeof(TValue) bytes
-                    // http://google-sparsehash.googlecode.com/svn/trunk/doc/sparsetable.html
-                    return (m_items.size() / 8) + (m_items.num_nonempty() * sizeof(TValue));
+                    return (m_items.size()) * sizeof(TValue);
                 }
 
                 void clear() {
@@ -91,7 +93,7 @@ namespace Osmium {
 
                 uint64_t m_grow_size;
 
-                google::sparsetable<TValue> m_items;
+                sparse_hash_map<uint64_t, TValue> m_items;
 
             }; // class SparseTable
 

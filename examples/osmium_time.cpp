@@ -8,7 +8,10 @@
 
 #include <cstdlib>
 #include <time.h>
+
+#ifndef WIN32
 #include <sys/times.h>
+#endif
 
 #define OSMIUM_WITH_PBF_INPUT
 #define OSMIUM_WITH_XML_INPUT
@@ -57,10 +60,13 @@ int main(int argc, char* argv[]) {
     MyTimerHandler handler;
     Osmium::Input::read(infile, handler);
 
+#ifndef WIN32
     struct tms tms;
     times(&tms);
     std::cout << "user time: " << ((double)tms.tms_utime) / sysconf(_SC_CLK_TCK) << "s   system time: " << ((double)tms.tms_stime) / sysconf(_SC_CLK_TCK) << "s  wallclock time: " << time(NULL) - t0 << "s" << std::endl;
-
+#else
+    std::cout << " wallclock time: " << time(NULL) - t0 << "s" << std::endl;
+#endif
     google::protobuf::ShutdownProtobufLibrary();
 }
 

@@ -5,12 +5,13 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
 
 PROJECT(OSMIUM)
 
-#SET(CMAKE_MODULE_PATH "${GD_SOURCE_DIR}/cmake/modules")
+OPTION(BUILD_EXAMPLES 1)
+OPTION(BUILD_TESTING 1)
+OPTION(BUILD_OSMJS 1)
 
-SET(SEARCH_PREFIX "d:/usr" CACHE PATH "Place where to search additional libraries")
+SET(SEARCH_PREFIX "" CACHE PATH "Place where to search additional libraries")
+SET(OLD_PATH ${CMAKE_PREFIX_PATH})
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${SEARCH_PREFIX})
-
-OPTION(ENABLE_PNG "Enable PNG support" 0)
 
 include(FindBoost)
 set (Boost_USE_STATIC_LIBS ON)
@@ -23,53 +24,108 @@ IF(CMAKE_COMPILER_IS_GNUCC)
   set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wredundant-decls -Wdisabled-optimization -pedantic")
 ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
-
 if(Boost_FOUND)
-	include_directories(${Boost_INCLUDE_DIRS})
+    include_directories(${Boost_INCLUDE_DIRS})
 else()
-    set(BOOST_ROOT "NOT FOUND: please choose" CACHE PATH "")
+    set(BOOST_ROOT "NOT FOUND: please choose" CACHE PATH "" FORCE)
     MESSAGE("PLEASE, specify the directory where the Boost library is installed in BOOST_ROOT")
 endif(Boost_FOUND)
 
-find_package(ZLIB)
-include_directories(${ZLIB_INCLUDE_DIR})
+INCLUDE (CheckIncludeFiles)
+CHECK_INCLUDE_FILES(winsock2.h HAVE_WINSOCK)
+if(HAVE_WINSOCK)
+   add_definitions( -DD_HAVE_WINSOCK )
+   SET(WINSOCK_LIB ws2_32)
+endif() 
 
-find_path(OSMPBF_INCLUDE_DIR osmpbf/osmpbf.h)
-find_library(OSMPBF_LIBRARY NAMES osmpbf )
-include_directories(${OSMPBF_INCLUDE_DIR})
+find_package(ZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIR})
 
 find_package(EXPAT REQUIRED)
 include_directories(${EXPAT_INCLUDE_DIR})
 
-find_path(SQLITE3_INCLUDE_DIR sqlite3.h)
-find_library(SQLITE3_LIBRARY NAMES sqlite3 )
-include_directories(${SQLITE3_INCLUDE_DIR})
-
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIR})
 
-find_path(GD_INCLUDE_DIR gd.h)
-find_library(GD_LIBRARY NAMES libgd-static)
-include_directories(${GD_INCLUDE_DIR})
+find_path(OSMPBF_INCLUDE_DIR osmpbf/osmpbf.h)
+find_library(OSMPBF_LIBRARY NAMES osmpbf )
 
-#find_path(GEOS_INCLUDE_DIR gd.h)
-#find_library(GEOS_LIBRARY NAMES libgeos)
-#include_directories(${GEOS_INCLUDE_DIR})
+include_directories(${OSMPBF_INCLUDE_DIR})
 
+if(OSMPBF_LIBRARY AND OSMPBF_INCLUDE_DIR)
+  SET(OSMPBF_FOUND 1)
+  SET(OSMPBF_LIBRARIES ${OSMPBF_LIBRARY} ${PROTOBUF_LITE_LIBRARY} ${ZLIB_LIBRARY})
+endif()
 
 find_package(Threads)
 
+find_package(LibXml2)
+
+##### Find GEOS Library 
+find_path(GEOS_INCLUDE_DIR geos/geos.h)
+find_library(GEOS_LIBRARY NAMES geos)
+if(GEOS_INCLUDE_DIR AND GEOS_LIBRARY)
+  SET(GEOS_FOUND 1)
+endif()
+#####
+
+##### Find SHP Library 
+find_path(SHP_INCLUDE_DIR shapefil.h )
+if(NOT SHP_INCLUDE_DIR)
+   find_path(SHP_INCLUDE_DIR2 libshp/shapefil.h)
+   SET(SHP_INCLUDE_DIR ${SHP_INCLUDE_DIR2}/libshp)
+endif()
+find_library(SHP_LIBRARY NAMES shp)
+if(SHP_INCLUDE_DIR AND SHP_LIBRARY)
+  SET(SHP_FOUND 1)
+else()
+  MESSAGE("libshp library not found, skipping test groups: geometry, geometry_geos")
+endif()
+#####
+
+##### Find GD Library 
+find_path(GD_INCLUDE_DIR gd.h REQUIRED)
+find_library(GD_LIBRARY NAMES libgd-static gd)
+if(GD_INCLUDE_DIR AND GD_LIBRARY)
+  SET(GD_FOUND 1)
+  find_package(PNG REQUIRED)
+endif()
+#####
+
+find_package(GDAL)
+if (GDAL_FOUND) 
+ SET(GDAL_LIBRARIES ${GDAL_LIBRARY} iconv ${ZLIB_LIBRARY} ${WINSOCK_LIB})
+endif()
+
 if(WIN32)
+	ADD_DEFINITIONS( -DWIN32 -D_WIN32 -DMSWIN32 -DBGDWIN32 -DWINVER=0x0500  -D_WIN32_WINNT=0x0500 -D_WIN32_IE=0x0600)
 	set(CPACK_GENERATOR ZIP)
 else(WIN32)
 	set(CPACK_GENERATOR TGZ)
 endif(WIN32)
 
-include_directories(include)
+include_directories(BEFORE include)
 
 enable_testing()
-add_subdirectory(test)
 
+
+OPTION(OSMIUM_WITH_DEBUG 0)
+if(OSMIUM_WITH_DEBUG)
+ add_definitions( -DOSMIUM_WITH_DEBUG )
+endif()
+
+
+if(BUILD_EXAMPLES)
+ add_subdirectory(examples)
+endif()
+
+if(BUILD_OMSJS)
+ add_subdirectory(osmjs)
+endif()
+
+if(BUILD_TESTING)
+ add_subdirectory(test)
+endif()
 
 install( DIRECTORY include/osmium DESTINATION include)
 install( FILES include/osmium.hpp DESTINATION include)

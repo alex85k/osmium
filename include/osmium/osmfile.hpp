@@ -27,8 +27,19 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #include <stdexcept>
 #include <string>
 #include <sys/types.h>
+
+#ifndef WIN32
+// no such file on Windows, even in MinGW
 #include <sys/wait.h>
+#endif
+
+#ifdef _MSC_VER
+typedef int pid_t;
+#include<io.h>
+#else
 #include <unistd.h>
+#endif
+
 #include <boost/utility.hpp>
 
 namespace Osmium {
@@ -312,6 +323,11 @@ namespace Osmium {
          * @throws SystemError if a system call fails.
          */
         int execute(const std::string& command, int input) {
+#ifdef WIN32
+	    std::cout<<"execute("<<command<<","<<input<<")";  
+            throw SystemError("Sorry, execute() method is  not supported on Windows systems (please replace fork() with something else",1);
+	    return 0;
+#else
             int pipefd[2];
             if (pipe(pipefd) < 0) {
                 throw SystemError("Can't create pipe", errno);
@@ -351,6 +367,7 @@ namespace Osmium {
             m_childpid = pid;
             ::close(pipefd[1-input]);
             return pipefd[input];
+#endif
         }
 
         /**
@@ -363,7 +380,11 @@ namespace Osmium {
             if (m_filename == "") {
                 return 0; // stdin
             } else {
-                int fd = open(m_filename.c_str(), O_RDONLY);
+		int flags =  O_RDONLY;
+#ifdef WIN32
+		flags |= O_BINARY;
+#endif
+                int fd = open(m_filename.c_str(), flags);
                 if (fd < 0) {
                     throw IOError("Open failed", m_filename, errno);
                 }
@@ -382,7 +403,11 @@ namespace Osmium {
             if (m_filename == "") {
                 return 1; // stdout
             } else {
-                int fd = open(m_filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666);
+		int flags = O_WRONLY | O_TRUNC | O_CREAT;
+#ifdef WIN32
+		flags |= O_BINARY;
+#endif
+                int fd = open(m_filename.c_str(), flags, 0666);
                 if (fd < 0) {
                     throw IOError("Open failed", m_filename, errno);
                 }
@@ -532,11 +557,13 @@ namespace Osmium {
             }
 
             if (m_childpid) {
+#ifndef WIN32
                 int status;
                 pid_t pid = waitpid(m_childpid, &status, 0);
                 if (pid < 0 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
                     throw IOError("Subprocess returned error", "", errno);
                 }
+#endif
                 m_childpid = 0;
             }
         }
