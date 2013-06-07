@@ -8,7 +8,10 @@ INCLUDE(Dart)
 SET(COMMON_SRC ../../test_main.cpp ../../test_utils.cpp)
 
 SET(COMMON_LIBS ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+IF(NOT Boost_USE_STATIC_LIBS)
 add_definitions(-DBOOST_TEST_DYN_LINK)
+ENDIF()
 
 include_directories(".")
 

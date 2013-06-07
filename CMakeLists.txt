@@ -8,14 +8,27 @@ PROJECT(OSMIUM)
 OPTION(BUILD_EXAMPLES "compile example programs" 1)
 OPTION(BUILD_TESTING "compile tests, please run them with ctest" 1)
 OPTION(BUILD_OSMJS  "compile osmjs executable - V8 needed" 1)
+OPTION(BUILD_WITH_STATIC_BOOST "compile tests and examples with static Boost libraries" 0)
+OPTION(BUILD_WITH_MULTITHREADED_BOOST "compile tests and examples with multithreaded Boost libraries" 1)
 
 SET(SEARCH_PREFIX "" CACHE PATH "Place where to search additional libraries")
 SET(OLD_PATH ${CMAKE_PREFIX_PATH})
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${SEARCH_PREFIX})
 
 include(FindBoost)
-#set (Boost_USE_STATIC_LIBS ON)
-#set (Boost_USE_MULTITHREADED ON)
+if (BUILD_WITH_STATIC_BOOST)
+	set (Boost_USE_STATIC_LIBS ON)
+else()
+	set (Boost_USE_STATIC_LIBS OFF)
+endif()
+
+if (BUILD_WITH_MULTITHREADED_BOOST)
+	set (Boost_USE_MULTITHREADED ON)
+else()
+	set (Boost_USE_MULTITHREADED OFF)
+endif()
+
+set(Boost_DEBUG ON)
 
 find_package (Boost 1.46 REQUIRED)
 
@@ -32,11 +45,11 @@ INCLUDE (CheckIncludeFiles)
 CHECK_INCLUDE_FILES(winsock2.h HAVE_WINSOCK)
 if(HAVE_WINSOCK)
    add_definitions( -DD_HAVE_WINSOCK )
-   LIST(ADD WIN_LIBS ws2_32)
+   LIST(APPEND WIN_LIBS ws2_32)
 endif() 
 
 if(CMAKE_COMPILER_IS_GNUCC AND WIN32)
-LIST(ADD WIN_LIBS iconv)
+LIST(APPEND WIN_LIBS iconv)
 endif()
 
 find_package(ZLIB REQUIRED)
@@ -105,7 +118,7 @@ endif()
 
 find_package(GDAL)
 if (GDAL_FOUND) 
- SET(GDAL_LIBRARIES ${GDAL_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIBS})
+ SET(GDAL_LIBRARIES ${GDAL_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIBS} )
 endif()
 
 if(WIN32)
@@ -141,3 +154,4 @@ endif()
 install( DIRECTORY include/osmium DESTINATION include)
 install( FILES include/osmium.hpp DESTINATION include)
 
+INCLUDE(CPack)
