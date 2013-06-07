@@ -11,9 +11,27 @@ OPTION(BUILD_OSMJS  "compile osmjs executable - V8 needed" 1)
 OPTION(BUILD_WITH_STATIC_BOOST "compile tests and examples with static Boost libraries" 0)
 OPTION(BUILD_WITH_MULTITHREADED_BOOST "compile tests and examples with multithreaded Boost libraries" 1)
 
+
 SET(SEARCH_PREFIX "" CACHE PATH "Place where to search additional libraries")
 SET(OLD_PATH ${CMAKE_PREFIX_PATH})
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${SEARCH_PREFIX})
+
+########## section for manual editing (if you do not want to run cmake-gui or give complex command line)
+#SET(BUILD_EXAMPLES 1)
+#SET(BUILD_TESTING 1)
+#SET(BUILD_OSMJS 1)
+#SET(BUILD_WITH_STATIC_BOOST 1)
+#SET(BUILD_WITH_MULTITHREADED_BOOST 1)
+set(Boost_DEBUG ON)
+#set(BOOST_ROOT D:/LIBS/BOOST)
+#set(ZLIB_INCLUDE_DIR D:/LIBS/ZLIB/include)
+#set(ZLIB_LIBRARY D:/LIBS/ZLIB/lib/zlibstatic.lib)
+#set(EXPAT_INCLUDE_DIR D:/LIBS/expat/include)
+#set(EXPAT_LIBRARY D:/LIBS/expat/lib/libexpat.lib)
+#set(PROTOBUF_INCLUDE_DIR D:/LIBS/Protobuf25/include)
+#set(PROTOBUF_LITE_LIBRARY D:/LIBS/Protobuf25/lib/libprotobuf-lite.lib)
+########## section for manual editing 
+
 
 include(FindBoost)
 if (BUILD_WITH_STATIC_BOOST)
@@ -28,18 +46,9 @@ else()
 	set (Boost_USE_MULTITHREADED OFF)
 endif()
 
-set(Boost_DEBUG ON)
 
 find_package (Boost 1.46 REQUIRED)
-
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-else()
-    set(BOOST_ROOT "NOT FOUND: please choose" CACHE PATH "" FORCE)
-    MESSAGE("PLEASE, specify the directory where the Boost library is installed in BOOST_ROOT")
-endif(Boost_FOUND)
-UNSET(Boost_LIBRARIES)
-UNSET(Boost_FOUND)
+MARK_AS_ADVANCED(CLEAR BOOST_ROOT)
 
 INCLUDE (CheckIncludeFiles)
 CHECK_INCLUDE_FILES(winsock2.h HAVE_WINSOCK)
@@ -52,28 +61,70 @@ if(CMAKE_COMPILER_IS_GNUCC AND WIN32)
 LIST(APPEND WIN_LIBS iconv)
 endif()
 
-find_package(ZLIB REQUIRED)
-include_directories(${ZLIB_INCLUDE_DIR})
+find_package(ZLIB)
+find_package(EXPAT)
 
-find_package(EXPAT REQUIRED)
-include_directories(${EXPAT_INCLUDE_DIR})
-
-find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIR})
+find_package(Protobuf)
+if ( PROTOBUF_INCLUDE_DIR AND PROTOBUF_LITE_LIBRARY )
+    include_directories(${PROTOBUF_INCLUDE_DIR})
+else()
+    MARK_AS_ADVANCED(CLEAR PROTOBUF_INCLUDE_DIR PROTOBUF_LITE_LIBRARY )
+    message(FATAL_ERROR "Please, specify the Google PROTOBUF library dir")
+endif()
 
 find_package(Threads)
-find_package(LibXml2)
+
 
 ##### Find OSMPBF  Library 
 find_path(OSMPBF_INCLUDE_DIR osmpbf/osmpbf.h)
 find_library(OSMPBF_LIBRARY NAMES osmpbf )
-include_directories(${OSMPBF_INCLUDE_DIR})
+#####
+
+# check that the essential libraries were found
+if (BUILD_EXAMPLES OR BUILD_TESTING OR BUILD_TESTING OR BUILD_OSMJS)
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+else()
+    set(BOOST_ROOT "NOT FOUND: please choose" CACHE PATH "")
+    MESSAGE(FATAL_ERROR "PLEASE, specify the directory where the Boost library is installed in BOOST_ROOT")
+endif(Boost_FOUND)
+
+if ( ZLIB_FOUND )
+    include_directories(${ZLIB_INCLUDE_DIR})
+else(ZLIB)
+    MARK_AS_ADVANCED(CLEAR ZLIB_LIBRARY ZLIB_INCLUDE_DIR)
+    message(FATAL_ERROR "Please, specify the ZLIB includes directory and the library file")
+endif( ZLIB_FOUND )
+
+if ( EXPAT_FOUND )
+    include_directories(${EXPAT_INCLUDE_DIR})
+else(EXPAT_FOUND )
+    MARK_AS_ADVANCED(CLEAR EXPAT_LIBRARY EXPAT_INCLUDE_DIR)
+    message(FATAL_ERROR "Please, specify the EXPAT includes directory and the library file")
+endif( EXPAT_FOUND  )
+
 if(OSMPBF_LIBRARY AND OSMPBF_INCLUDE_DIR)
+  include_directories(${OSMPBF_INCLUDE_DIR})
   SET(OSMPBF_FOUND 1)
   SET(OSMPBF_LIBRARIES ${OSMPBF_LIBRARY} ${PROTOBUF_LITE_LIBRARY} ${ZLIB_LIBRARY})
   MESSAGE( STATUS "OSMPBF library found")
 else()
-  MESSAGE( STATUS "OSMPBF library found")
+  MESSAGE( FATAL_ERROR "OSMPBF library not found, please specify its location manually")
+endif()
+endif()
+
+
+find_package(LibXml2)
+
+##### Find Google SparseHash
+find_path(SPARSEHASH_INCLUDE_DIR sparsehash/sparsetable.h)
+if(SPARSEHASH_INCLUDE_DIR)
+
+  MESSAGE( STATUS "SparseHash library found")
+  SET(SPARSEHASH_FOUND 1)
+else()
+  MESSAGE( STATUS "SparseHash library not found")
 endif()
 #####
 
@@ -132,12 +183,10 @@ include_directories(BEFORE include)
 
 enable_testing()
 
-
 OPTION(OSMIUM_WITH_DEBUG 0)
 if(OSMIUM_WITH_DEBUG)
  add_definitions( -DOSMIUM_WITH_DEBUG )
 endif()
-
 
 if(BUILD_EXAMPLES)
  add_subdirectory(examples)

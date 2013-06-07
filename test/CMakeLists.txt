@@ -1,3 +1,6 @@
+
+UNSET(Boost_LIBRARIES)
+UNSET(Boost_FOUND)
 find_package(Boost 1.46 COMPONENTS unit_test_framework regex)
 
 if(Boost_UNIT_TEST_FRAMEWORK_LIBRARY)
@@ -39,7 +42,7 @@ if(GDAL_FOUND)
    include_directories(${GDAL_INCLUDE_DIR})
    add_subdirectory (t/geometry_ogr)
 else()
-   MESSAGE("GDAL library not found, skipping test groups: geometry, geometry_geos")
+   MESSAGE("GDAL library not found, skipping test groups: geometry_ogr")
 endif()
 
 else()

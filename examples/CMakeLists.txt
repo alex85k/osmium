@@ -25,18 +25,22 @@ MESSAGE(${example})
    target_link_libraries (${example} ${EXPAT_LIBRARY} ${OSMPBF_LIBRARIES})
 ENDFOREACH(example)
 
+if(SPARSEHASH_FOUND)
+   include_directories(${SPARSEHASH_INCLUDE_DIR})
+endif()
 
 SET(EXAMPLES_WITH_XML2
 	osmium_convert
 	osmium_range_from_history
 )
 
+
 if (LIBXML2_FOUND)
    include_directories(${LIBXML2_INCLUDE_DIR})
    FOREACH(example ${EXAMPLES_WITH_XML2})
    MESSAGE(${example})
-      add_executable(${example} "${example}.cpp")
-      target_link_libraries (${example} ${EXPAT_LIBRARY} ${OSMPBF_LIBRARIES} ${LIBXML2_LIBRARIES} ${WIN_LIBS} )
+      add_executable(${example} "${example}.cpp") 
+      target_link_libraries (${example} ${EXPAT_LIBRARY} ${OSMPBF_LIBRARIES} ${LIBXML2_LIBRARIES} ${WIN_LIBS})
    ENDFOREACH(example)
 else()
    MESSAGE("LibXML2 not found, skipping examples " ${EXAMPLES_WITH_XML2})
@@ -44,7 +48,7 @@ endif()
 
 
 SET(example osmium_mpdump)
-if (GEOS_FOUND)
+if (GEOS_FOUND AND SPARSEHASH_FOUND)
    include_directories(${GEOS_INCLUDE_DIR})
    add_executable(${example} "${example}.cpp")
    MESSAGE(${example})
@@ -93,7 +97,7 @@ endif()
 
 
 SET(example osmium_toshape)
-if (SHP_FOUND)
+if (SHP_FOUND AND SPARSEHASH_FOUND)
    include_directories(${SHP_INCLUDE_DIR})
    add_executable(${example} "${example}.cpp")
    MESSAGE(${example})

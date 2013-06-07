@@ -36,6 +36,7 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #ifdef _MSC_VER
 typedef int pid_t;
 #include<io.h>
+#include<iostream>
 #else
 #include <unistd.h>
 #endif
