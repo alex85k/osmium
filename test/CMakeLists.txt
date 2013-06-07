@@ -1,7 +1,7 @@
 
 UNSET(Boost_LIBRARIES)
 UNSET(Boost_FOUND)
-find_package(Boost 1.46 COMPONENTS unit_test_framework regex)
+find_package(Boost 1.38 COMPONENTS unit_test_framework regex)
 
 if(Boost_UNIT_TEST_FRAMEWORK_LIBRARY)
 

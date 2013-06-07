@@ -22,7 +22,7 @@ SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${SEARCH_PREFIX})
 #SET(BUILD_OSMJS 1)
 #SET(BUILD_WITH_STATIC_BOOST 1)
 #SET(BUILD_WITH_MULTITHREADED_BOOST 1)
-set(Boost_DEBUG ON)
+#set(Boost_DEBUG ON)
 #set(BOOST_ROOT D:/LIBS/BOOST)
 #set(ZLIB_INCLUDE_DIR D:/LIBS/ZLIB/include)
 #set(ZLIB_LIBRARY D:/LIBS/ZLIB/lib/zlibstatic.lib)
@@ -47,7 +47,7 @@ else()
 endif()
 
 
-find_package (Boost 1.46 REQUIRED)
+find_package (Boost 1.38 REQUIRED)
 MARK_AS_ADVANCED(CLEAR BOOST_ROOT)
 
 INCLUDE (CheckIncludeFiles)
@@ -118,7 +118,7 @@ endif()
 find_package(LibXml2)
 
 ##### Find Google SparseHash
-find_path(SPARSEHASH_INCLUDE_DIR sparsehash/sparsetable.h)
+find_path(SPARSEHASH_INCLUDE_DIR google/sparsetable)
 if(SPARSEHASH_INCLUDE_DIR)
 
   MESSAGE( STATUS "SparseHash library found")
