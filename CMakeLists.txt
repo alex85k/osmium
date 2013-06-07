@@ -63,17 +63,8 @@ endif()
 
 find_package(ZLIB)
 find_package(EXPAT)
-
 find_package(Protobuf)
-if ( PROTOBUF_INCLUDE_DIR AND PROTOBUF_LITE_LIBRARY )
-    include_directories(${PROTOBUF_INCLUDE_DIR})
-else()
-    MARK_AS_ADVANCED(CLEAR PROTOBUF_INCLUDE_DIR PROTOBUF_LITE_LIBRARY )
-    message(FATAL_ERROR "Please, specify the Google PROTOBUF library dir")
-endif()
-
 find_package(Threads)
-
 
 ##### Find OSMPBF  Library 
 find_path(OSMPBF_INCLUDE_DIR osmpbf/osmpbf.h)
@@ -103,6 +94,13 @@ else(EXPAT_FOUND )
     MARK_AS_ADVANCED(CLEAR EXPAT_LIBRARY EXPAT_INCLUDE_DIR)
     message(FATAL_ERROR "Please, specify the EXPAT includes directory and the library file")
 endif( EXPAT_FOUND  )
+
+if ( PROTOBUF_INCLUDE_DIR AND PROTOBUF_LITE_LIBRARY )
+    include_directories(${PROTOBUF_INCLUDE_DIR})
+else()
+    MARK_AS_ADVANCED(CLEAR PROTOBUF_INCLUDE_DIR PROTOBUF_LITE_LIBRARY )
+    message(FATAL_ERROR "Please, specify the Google PROTOBUF library dir")
+endif()
 
 if(OSMPBF_LIBRARY AND OSMPBF_INCLUDE_DIR)
   include_directories(${OSMPBF_INCLUDE_DIR})
