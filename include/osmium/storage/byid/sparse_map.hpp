@@ -1,5 +1,5 @@
-#ifndef OSMIUM_STORAGE_BYID_SPARSE_TABLE_HPP
-#define OSMIUM_STORAGE_BYID_SPARSE_TABLE_HPP
+#ifndef OSMIUM_STORAGE_BYID_SPARSE_MAP_HPP
+#define OSMIUM_STORAGE_BYID_SPARSE_MAP_HPP
 
 /*
 
@@ -22,7 +22,7 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 
 */
 
-#include <sparsehash/sparse_hash_map>
+#include <google/sparse_hash_map>
 
 using google::sparse_hash_map;      // namespace where class lives by default
 
@@ -38,9 +38,8 @@ namespace Osmium {
         namespace ById {
 
             /**
-            * The SparseTable store stores items in a Google sparsetable,
-            * a data structure that can hold sparsly filled tables in a
-            * very space efficient way. It will resize automatically.
+            * The SparseMap store stores items in a Google sparse map,
+            * a data structure that implement memory-efficient hash map
             *
             * Use this node location store if the ID space is only sparsly
             * populated, such as when working with smaller OSM files (like
@@ -54,9 +53,7 @@ namespace Osmium {
                 /**
                 * Constructor.
                 *
-                * @param grow_size The initial size of the storage (in items).
-                *                  The storage will grow by at least this size
-                *                  every time it runs out of space.
+                * @param grow_size is ignored fo rthis type of storage.
                 */
                 SparseMap(const uint64_t grow_size=10000) :
                     Base<TValue>(),
@@ -72,8 +69,9 @@ namespace Osmium {
 	            typename sparse_hash_map<uint64_t, TValue>::const_iterator iter = m_items.find(id);
 	            if (iter != m_items.end() )
                          return iter->second; 
-                    else
-			 return NULL; 
+		    else
+                       return TValue(); 
+//                       throw std::runtime_error("object with given ID was not found in SimpleMap storage");
                 }
 
                 uint64_t size() const {
@@ -81,7 +79,6 @@ namespace Osmium {
                 }
 
                 uint64_t used_memory() const {
-                    // unused items use 1 bit, used items sizeof(TValue) bytes
                     return (m_items.size()) * sizeof(TValue);
                 }
 
@@ -95,7 +92,7 @@ namespace Osmium {
 
                 sparse_hash_map<uint64_t, TValue> m_items;
 
-            }; // class SparseTable
+            }; // class SparseMap
 
         } // namespace ById
 
@@ -103,4 +100,4 @@ namespace Osmium {
 
 } // namespace Osmium
 
-#endif // OSMIUM_STORAGE_BYID_SPARSE_TABLE_HPP
+#endif // OSMIUM_STORAGE_BYID_SPARSE_MAP_HPP

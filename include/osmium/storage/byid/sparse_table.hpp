@@ -57,13 +57,11 @@ namespace Osmium {
                     Base<TValue>(),
                     m_grow_size(grow_size),
                     m_items(grow_size) {
-                    m_items.resize(4000000000ULL);
+//                    m_items.resize(4000000000ULL);
                 }
 
                 void set(const uint64_t id, const TValue value) {
-//       		    std::cout<<"+"<<id<<",";
                     if (id >= m_items.size()) {
-//			std::cout<<id + m_grow_size<<std::endl;
                         m_items.resize(id + m_grow_size);
                     }
                     m_items[id] = value;

@@ -1,5 +1,5 @@
-#ifndef OSMIUM_STORAGE_BYID_SPARSE_TABLE_HPP
-#define OSMIUM_STORAGE_BYID_SPARSE_TABLE_HPP
+#ifndef OSMIUM_STORAGE_BYID_SIMPLE_MAP_HPP
+#define OSMIUM_STORAGE_BYID_SIMPLE_MAP_HPP
 
 /*
 
@@ -35,13 +35,8 @@ namespace Osmium {
         namespace ById {
 
             /**
-            * The SparseTable store stores items in a Google sparsetable,
-            * a data structure that can hold sparsly filled tables in a
-            * very space efficient way. It will resize automatically.
-            *
-            * Use this node location store if the ID space is only sparsly
-            * populated, such as when working with smaller OSM files (like
-            * country extracts).
+            * This is the most simple storage based on standrd map class
+	    * It is suitable when not many IDs are used and they are distributed sparsely across big interval
             */
             template <typename TValue>
             class SimpleMap : public Osmium::Storage::ById::Base<TValue> {
@@ -51,9 +46,7 @@ namespace Osmium {
                 /**
                 * Constructor.
                 *
-                * @param grow_size The initial size of the storage (in items).
-                *                  The storage will grow by at least this size
-                *                  every time it runs out of space.
+                * @param grow_size is ignored for this type of storage
                 */
                 SimpleMap(const uint64_t grow_size=10000) :
                     Base<TValue>(),
@@ -70,7 +63,8 @@ namespace Osmium {
 	            if (iter != m_items.end() )
                          return iter->second; 
                     else
-			 return NULL; 
+                        return TValue(); 
+//                       throw std::runtime_error("object with given ID was not found in SimpleMap storage");
                 }
 
                 uint64_t size() const {
@@ -92,7 +86,7 @@ namespace Osmium {
 
 		std::map <uint64_t, TValue> m_items;
 
-            }; // class SparseTable
+            }; // class SimpleMap
 
         } // namespace ById
 
@@ -100,4 +94,4 @@ namespace Osmium {
 
 } // namespace Osmium
 
-#endif // OSMIUM_STORAGE_BYID_SPARSE_TABLE_HPP
+#endif // OSMIUM_STORAGE_BYID_SIMPLE_MAP_HPP
