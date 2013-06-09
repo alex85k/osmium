@@ -31,6 +31,8 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #ifndef WIN32
 // no such file on Windows, even in MinGW
 #include <sys/wait.h>
+#else
+#include <iostream>
 #endif
 
 #ifdef _MSC_VER

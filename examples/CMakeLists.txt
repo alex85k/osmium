@@ -15,10 +15,14 @@ SET(SIMPLE_EXAMPLES
 	osmium_find_bbox
 	osmium_progress
 	osmium_relation_members
-	osmium_sizeof
 	osmium_store_and_debug
 	osmium_time
 )
+
+if (GEOS_FOUND)
+   include_directories(${GEOS_INCLUDE_DIR})
+   list(APPEND SIMPLE_EXAMPLES osmium_sizeof)
+endif()
 
 FOREACH(example ${SIMPLE_EXAMPLES})
 MESSAGE(${example})
