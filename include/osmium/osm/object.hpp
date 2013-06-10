@@ -63,7 +63,7 @@ namespace Osmium {
             }
 
             Object& id(const char* id) {
-                m_id = atol(id);
+                m_id = atoll(id);
                 return *this;
             }
 
