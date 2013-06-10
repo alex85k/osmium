@@ -90,7 +90,7 @@ namespace Osmium {
                     if (debug && has_debug_level(2)) {
                         std::cout << "MultiPolygon from way " << way->id() << "\n";
                     }
-                    AssemblerType::nested_handler().area(boost::make_shared<Osmium::OSM::Area>(*way));
+                    AssemblerType::nested_handler().area(make_shared<Osmium::OSM::Area>(*way));
                 }
             }
 
@@ -101,7 +101,7 @@ namespace Osmium {
 
                 TBuilder builder(relation_info, m_attempt_repair);
 
-                BOOST_FOREACH(boost::shared_ptr<Osmium::OSM::Area>& area, builder.build()) {
+                BOOST_FOREACH(shared_ptr<Osmium::OSM::Area>& area, builder.build()) {
                     AssemblerType::nested_handler().area(area);
                 }
             }

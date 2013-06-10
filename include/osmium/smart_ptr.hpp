@@ -27,6 +27,18 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #include <boost/scoped_ptr.hpp>
 #include <boost/make_shared.hpp>
 
+#ifdef _MSC_VER
+namespace Osmium {
+using boost::shared_ptr;
+using boost::weak_ptr;
+using boost::scoped_ptr;
+using boost::static_pointer_cast;
+using boost::const_pointer_cast;
+using boost::dynamic_pointer_cast;
+using boost::make_shared;
+}
+#endif
+
 using boost::shared_ptr;
 using boost::weak_ptr;
 using boost::scoped_ptr;

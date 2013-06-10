@@ -174,7 +174,7 @@ namespace Osmium {
 
             // empty specialization to optimize the case where the node() method on the handler is empty
             void parse_node_group(const OSMPBF::PrimitiveGroup& /*group*/, const OSMPBF::StringTable& /*stringtable*/,
-                                  void (Osmium::Handler::Base::*)(const boost::shared_ptr<Osmium::OSM::Node const>&) const) {
+                                  void (Osmium::Handler::Base::*)(const shared_ptr<Osmium::OSM::Node const>&) const) {
             }
 
             template <typename T>
@@ -212,7 +212,7 @@ namespace Osmium {
 
             // empty specialization to optimize the case where the way() method on the handler is empty
             void parse_way_group(const OSMPBF::PrimitiveGroup& /*group*/, const OSMPBF::StringTable& /*stringtable*/,
-                                 void (Osmium::Handler::Base::*)(const boost::shared_ptr<Osmium::OSM::Way const>&) const) {
+                                 void (Osmium::Handler::Base::*)(const shared_ptr<Osmium::OSM::Way const>&) const) {
             }
 
             template <typename T>
@@ -253,7 +253,7 @@ namespace Osmium {
 
             // empty specialization to optimize the case where the relation() method on the handler is empty
             void parse_relation_group(const OSMPBF::PrimitiveGroup& /*group*/, const OSMPBF::StringTable& /*stringtable*/,
-                                      void (Osmium::Handler::Base::*)(const boost::shared_ptr<Osmium::OSM::Relation const>&) const) {
+                                      void (Osmium::Handler::Base::*)(const shared_ptr<Osmium::OSM::Relation const>&) const) {
             }
 
             template <typename T>
@@ -306,7 +306,7 @@ namespace Osmium {
 
             // empty specialization to optimize the case where the node() method on the handler is empty
             void parse_dense_node_group(const OSMPBF::PrimitiveGroup& /*group*/, const OSMPBF::StringTable& /*stringtable*/,
-                                        void (Osmium::Handler::Base::*)(const boost::shared_ptr<Osmium::OSM::Node const>&) const) {
+                                        void (Osmium::Handler::Base::*)(const shared_ptr<Osmium::OSM::Node const>&) const) {
             }
 
             template <typename T>
