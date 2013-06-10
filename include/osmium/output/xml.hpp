@@ -31,7 +31,8 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 
 #define __STDC_FORMAT_MACROS
 #ifdef _MSC_VER
-#include <osmium/windows/inttypes.h>
+#include <stdint.h>
+#define PRId64 "I64d"
 #else
 #include <inttypes.h>
 #endif

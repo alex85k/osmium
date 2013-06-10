@@ -43,4 +43,8 @@ typedef int32_t  osm_changeset_id_t; ///< type for %OSM changeset IDs
 typedef int32_t  osm_user_id_t;      ///< type for %OSM user IDs
 typedef uint32_t osm_sequence_id_t;  ///< type for %OSM nodes and members sequence IDs
 
+#ifdef _MSC_VER
+#define atoll(x) (_atoi64(x))
+#endif
+
 #endif // OSMIUM_OSM_TYPES_HPP

@@ -33,9 +33,7 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #include <string>
 #include <expat.h>
 
-#ifdef _MSC_VER
-#define atoll(x) (_atoi64(x))
-#else
+#ifndef _MSC_VER
 #include <unistd.h>
 #endif
 #include <osmium/input.hpp>
