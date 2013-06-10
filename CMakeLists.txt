@@ -63,7 +63,7 @@ endif()
 
 if(NOT CMAKE_COMPILER_IS_GNUCC AND WIN32)
    find_path(GETOPT_INCLUDE_DIR getopt.h)
-   find_library(GETOPT_LIBRARY NAMES getopt )
+   find_library(GETOPT_LIBRARY NAMES wingetopt )
    if (GETOPT_INCLUDE_DIR AND GETOPT_LIBRARY)
        include_directories(${GETOPT_INCLUDE_DIR})
        LIST(APPEND WIN_LIBS ${GETOPT_LIBRARY})
