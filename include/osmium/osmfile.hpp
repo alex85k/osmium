@@ -351,17 +351,17 @@ namespace Osmium {
                 }
 
                 if (input == 0) {
-                    open("/dev/null", O_RDONLY); // stdin
-                    open("/dev/null", O_WRONLY); // stderr
-                    if (execlp(command.c_str(), command.c_str(), m_filename.c_str(), NULL) < 0) {
+                    ::open("/dev/null", O_RDONLY); // stdin
+                    ::open("/dev/null", O_WRONLY); // stderr
+                    if (::execlp(command.c_str(), command.c_str(), m_filename.c_str(), NULL) < 0) {
                         exit(1);
                     }
                 } else {
-                    if (open(m_filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666) != 1) {
+                    if (::open(m_filename.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666) != 1) {
                         exit(1);
                     }
-                    open("/dev/null", O_WRONLY); // stderr
-                    if (execlp(command.c_str(), command.c_str(), 0, NULL) < 0) {
+                    ::open("/dev/null", O_WRONLY); // stderr
+                    if (::execlp(command.c_str(), command.c_str(), 0, NULL) < 0) {
                         exit(1);
                     }
                 }
@@ -383,11 +383,11 @@ namespace Osmium {
             if (m_filename == "") {
                 return 0; // stdin
             } else {
-		int flags =  O_RDONLY;
+                int flags = O_RDONLY;
 #ifdef WIN32
-		flags |= O_BINARY;
+                flags |= O_BINARY;
 #endif
-                int fd = open(m_filename.c_str(), flags);
+                int fd = ::open(m_filename.c_str(), flags);
                 if (fd < 0) {
                     throw IOError("Open failed", m_filename, errno);
                 }
@@ -406,11 +406,11 @@ namespace Osmium {
             if (m_filename == "") {
                 return 1; // stdout
             } else {
-		int flags = O_WRONLY | O_TRUNC | O_CREAT;
+                int flags = O_WRONLY | O_TRUNC | O_CREAT;
 #ifdef WIN32
-		flags |= O_BINARY;
+                flags |= O_BINARY;
 #endif
-                int fd = open(m_filename.c_str(), flags, 0666);
+                int fd = ::open(m_filename.c_str(), flags, 0666);
                 if (fd < 0) {
                     throw IOError("Open failed", m_filename, errno);
                 }
