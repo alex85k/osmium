@@ -91,16 +91,6 @@ namespace Osmium {
             return _mkgmtime(&tm);
 #endif
         }
-        return _mkgmtime(&tm);
-#else 
-	struct tm tm = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        if (strptime(timestamp, timestamp_format(), &tm) == NULL) {
-            throw std::invalid_argument("can't parse timestamp");
-        }
-        return timegm(&tm);
-#endif
-        }
-
 
     } // namespace Timestamp
 

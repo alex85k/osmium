@@ -33,9 +33,6 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #include <string>
 #include <expat.h>
 
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
 #include <osmium/input.hpp>
 
 namespace Osmium {

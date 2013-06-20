@@ -2,6 +2,7 @@ SET(TESTS_FILES
 	test_linestring_geometry
 	test_point_geometry
 	test_polygon_geometry
+	test_haversine
 )
 
 FOREACH(test_name ${TESTS_FILES})
