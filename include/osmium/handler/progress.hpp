@@ -22,9 +22,14 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 
 */
 
+#ifdef _MSC_VER
+#define isatty _isatty
+#include <osmium/windows/systime.hpp>
+#else
 #include <unistd.h>
 #include <sys/time.h>
 #include <iostream>
+#endif
 
 #include <osmium/handler.hpp>
 

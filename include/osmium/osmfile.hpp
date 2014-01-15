@@ -26,9 +26,24 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
+
 #include <sys/types.h>
+
+#ifndef WIN32
+// no such file on Windows, even in MinGW
 #include <sys/wait.h>
+#else
+#include <iostream>
+#endif
+
+#ifdef _MSC_VER
+typedef int pid_t;
+#include<io.h>
+#include<iostream>
+#else
 #include <unistd.h>
+#endif
+
 #include <boost/utility.hpp>
 
 namespace Osmium {
@@ -312,6 +327,11 @@ namespace Osmium {
          * @throws SystemError if a system call fails.
          */
         int execute(const std::string& command, int input) {
+#ifdef WIN32
+	    std::cout<<"execute("<<command<<","<<input<<")";  
+            throw SystemError("Sorry, execute() method is  not supported on Windows systems (please replace fork() with something else",1);
+	    return 0;
+#else
             int pipefd[2];
             if (pipe(pipefd) < 0) {
                 throw SystemError("Can't create pipe", errno);
@@ -351,6 +371,7 @@ namespace Osmium {
             m_childpid = pid;
             ::close(pipefd[1-input]);
             return pipefd[input];
+#endif
         }
 
         /**
@@ -539,6 +560,7 @@ namespace Osmium {
                 m_fd = -1;
             }
 
+#ifndef WIN32
             if (m_childpid) {
                 int status;
                 pid_t pid = waitpid(m_childpid, &status, 0);
@@ -549,6 +571,7 @@ namespace Osmium {
                 }
                 m_childpid = 0;
             }
+#endif
         }
 
         /**

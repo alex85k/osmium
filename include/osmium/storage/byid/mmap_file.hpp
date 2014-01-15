@@ -25,10 +25,20 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #include <cstdio>
 #include <cstdlib>
 #include <fcntl.h>
+
+#ifndef WIN32
 #include <sys/mman.h>
+#else
+#include <osmium/windows/mmap.hpp>
+#endif
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifdef _MSC_VER
+#define ftruncate _chsize
+#else
 #include <unistd.h>
+#endif
 #include <string>
 
 #include <osmium/storage/byid.hpp>

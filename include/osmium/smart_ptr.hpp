@@ -22,10 +22,10 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 
 */
 
-#include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
 
 using boost::shared_ptr;
 using boost::weak_ptr;
@@ -34,5 +34,13 @@ using boost::static_pointer_cast;
 using boost::const_pointer_cast;
 using boost::dynamic_pointer_cast;
 using boost::make_shared;
-
+namespace Osmium {
+using boost::shared_ptr;
+using boost::weak_ptr;
+using boost::scoped_ptr;
+using boost::static_pointer_cast;
+using boost::const_pointer_cast;
+using boost::dynamic_pointer_cast;
+using boost::make_shared;
+}
 #endif // OSMIUM_SMART_PTR_HPP

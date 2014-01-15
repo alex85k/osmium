@@ -30,7 +30,12 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #include <libxml/xmlwriter.h>
 
 #define __STDC_FORMAT_MACROS
+#ifdef _MSC_VER
+#include <stdint.h>
+#define PRId64 "I64d"
+#else
 #include <inttypes.h>
+#endif
 
 #include <osmium/output.hpp>
 

@@ -28,6 +28,14 @@ You should have received a copy of the Licenses along with Osmium. If not, see
 #include <boost/operators.hpp>
 #include <boost/integer_traits.hpp>
 
+#ifdef _MSC_VER
+#include <math.h>
+double 	round (double x) {
+ return floor(x + 0.5);
+}
+#endif
+
+
 namespace Osmium {
 
     namespace OSM {
